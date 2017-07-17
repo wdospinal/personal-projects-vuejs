@@ -1,12 +1,15 @@
 <template>
   <div id="app">
     <card class="card" v-for="project in projects" v-bind:project="project" v-bind:key="project.name" @clicked="onLike"></card>
+    <button id="show-modal" @click="showModal = !showModal">Show Modal</button>
+    <add v-if="showModal"  @added="onAdd" @closed="showModal = false"></add>
   </div>
 </template>
 
 <script>
 import firebase from 'firebase';
 import Card from '@/components/Card';
+import Add from '@/components/Add';
 
 const config = {
   apiKey: 'AIzaSyCT_JcNuLP0N947hKlbI56lVznRKggxxkI',
@@ -25,6 +28,12 @@ export default {
   name: 'app',
   components: {
     Card,
+    Add,
+  },
+  data: function data() {
+    return {
+      showModal: false,
+    };
   },
   methods: {
     onLike(value) {
@@ -38,6 +47,10 @@ export default {
       const updates = {};
       updates[`/messages/${key}`] = saveValue;
       return db.ref().update(updates);
+    },
+    onAdd(project) {
+      this.showModal = false;
+      return projectsRef.push(project);
     },
   },
   firebase: {
